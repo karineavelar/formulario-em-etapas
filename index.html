@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Formulário de Inscrição em Etapas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
+    .form-container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .confirm-data {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Formulário de Inscrição</h2>
+
+  <form id="inscricaoForm">
+    <!-- Etapa 1: Dados Pessoais -->
+    <div class="step active" id="step1">
+      <h3>Etapa 1: Dados Pessoais</h3>
+      <label>Nome Completo:</label>
+      <input type="text" name="nome" required />
+
+      <label>Email:</label>
+      <input type="email" name="email" required />
+
+      <label>Telefone:</label>
+      <input type="tel" name="telefone" required />
+    </div>
+
+    <!-- Etapa 2: Endereço -->
+    <div class="step" id="step2">
+      <h3>Etapa 2: Endereço</h3>
+      <label>CEP:</label>
+      <input type="text" name="cep" required />
+
+      <label>Rua:</label>
+      <input type="text" name="rua" required />
+
+      <label>Número:</label>
+      <input type="text" name="numero" required />
+
+      <label>Cidade:</label>
+      <input type="text" name="cidade" required />
+    </div>
+
+    <!-- Etapa 3: Confirmação -->
+    <div class="step" id="step3">
+      <h3>Etapa 3: Confirmação</h3>
+      <p>Confira seus dados antes de enviar:</p>
+      <div class="confirm-data" id="confirmData"></div>
+    </div>
+
+    <!-- Botões de navegação -->
+    <div class="buttons">
+      <button type="button" id="prevBtn" onclick="changeStep(-1)">Voltar</button>
+      <button type="button" id="nextBtn" onclick="changeStep(1)">Próximo</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 3;
+
+  function showStep(step) {
+    const steps = document.querySelectorAll('.step');
+    steps.forEach((s, i) => {
+      s.classList.toggle('active', i + 1 === step);
+    });
+
+    document.getElementById('prevBtn').disabled = step === 1;
+    const nextBtn = document.getElementById('nextBtn');
+    if (step === totalSteps) {
+      nextBtn.textContent = 'Enviar';
+      nextBtn.onclick = submitForm;
+      showConfirmation();
+    } else {
+      nextBtn.textContent = 'Próximo';
+      nextBtn.onclick = () => changeStep(1);
+    }
+  }
+
+  function changeStep(direction) {
+    const form = document.getElementById('inscricaoForm');
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    currentStep += direction;
+    if (currentStep > totalSteps) currentStep = totalSteps;
+    if (currentStep < 1) currentStep = 1;
+    showStep(currentStep);
+  }
+
+  function showConfirmation() {
+    const formData = new FormData(document.getElementById('inscricaoForm'));
+    const confirmDiv = document.getElementById('confirmData');
+    confirmDiv.innerHTML = '';
+
+    for (let [key, value] of formData.entries()) {
+      confirmDiv.innerHTML += `<p><strong>${key}:</strong> ${value}</p>`;
+    }
+  }
+
+  function submitForm() {
+    alert('Inscrição enviada com sucesso!');
+    // Aqui você pode enviar os dados com fetch/ajax
+  }
+
+  showStep(currentStep);
+</script>
+
+</body>
+</html>
